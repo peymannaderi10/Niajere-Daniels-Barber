@@ -1,20 +1,16 @@
 'use client';
+
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { FaInstagram, FaFacebook, FaTiktok } from 'react-icons/fa6';
 import Link from 'next/link';
+import { FaInstagram, FaFacebook, FaTiktok, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 
 const barbers = [
   {
     id: 1,
     name: 'Niajere Daniels',
     role: 'Master Barber & Owner',
-    image: '/niajere.jpg', // You'll need to add this image
-    qualifications: [
-      'Licensed Master Barber',
-      'Precision Cutting Specialist',
-      '10+ Years Experience'
-    ],
-    specialties: 'Fades, Design Work, Beard Sculpting',
+    image: '/niajere.jpg',
     bio: 'With over a decade of experience, Niajere brings unparalleled expertise and artistry to every cut.',
     social: {
       instagram: '#',
@@ -22,106 +18,134 @@ const barbers = [
       tiktok: '#'
     }
   },
-  // Add more barbers here as needed
+  {
+    id: 2,
+    name: 'Marcus Johnson',
+    role: 'Senior Barber',
+    image: '/barber2.jpg',
+    bio: 'Marcus specializes in classic cuts and modern color treatments, bringing a fresh perspective to traditional styles.',
+    social: {
+      instagram: '#',
+      facebook: '#',
+      tiktok: '#'
+    }
+  },
+  {
+    id: 3,
+    name: 'David Rodriguez',
+    role: 'Style Specialist',
+    image: '/barber3.jpg',
+    bio: 'David is known for his innovative approach to textured hair and contemporary styling techniques.',
+    social: {
+      instagram: '#',
+      facebook: '#',
+      tiktok: '#'
+    }
+  }
 ];
 
-const Team = () => {
+export default function Team() {
+  const [sliderIndex, setSliderIndex] = useState(0);
+  const [showSlider, setShowSlider] = useState(false);
+  const itemsPerPage = 2;
+
+  useEffect(() => {
+    const checkWidth = () => {
+      // Show slider if screen width is less than 1024px (lg breakpoint)
+      setShowSlider(window.innerWidth < 1024);
+    };
+
+    checkWidth();
+    window.addEventListener('resize', checkWidth);
+    return () => window.removeEventListener('resize', checkWidth);
+  }, []);
+
+  const handleNext = () => {
+    if (sliderIndex + itemsPerPage < barbers.length) {
+      setSliderIndex(prev => prev + itemsPerPage);
+    }
+  };
+
+  const handlePrev = () => {
+    if (sliderIndex > 0) {
+      setSliderIndex(prev => prev - itemsPerPage);
+    }
+  };
+
   return (
-    <section id="team" className="py-20 bg-white">
+    <section id="team" className="py-24 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Meet Our Team</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Expert barbers committed to delivering excellence in every cut
+            Our experienced barbers are dedicated to providing you with the perfect cut and grooming experience.
           </p>
         </div>
 
-        <div className="flex flex-wrap justify-center gap-8">
-          {barbers.map((barber, index) => (
-            <div
-              key={barber.id}
-              className="bg-white rounded-xl shadow-lg overflow-hidden hover:shadow-xl transition-shadow duration-300 w-full max-w-sm flex-shrink-0"
-            >
-              {/* Image Container */}
-              <div className="relative h-80 w-full">
-                <Image
-                  src={barber.image}
-                  alt={barber.name}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-
-              {/* Content Container */}
-              <div className="p-6">
-                <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                  {barber.name}
-                </h3>
-                <p className="text-indigo-600 font-semibold mb-4">{barber.role}</p>
-                
-                {/* Qualifications */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-2">Qualifications</h4>
-                  <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
-                    {barber.qualifications.map((qual, idx) => (
-                      <li key={idx}>{qual}</li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Specialties */}
-                <div className="mb-4">
-                  <h4 className="text-sm font-semibold text-gray-900 mb-2">Specialties</h4>
-                  <p className="text-gray-600 text-sm">{barber.specialties}</p>
-                </div>
-
-                {/* Bio */}
-                <p className="text-gray-600 text-sm mb-6">{barber.bio}</p>
-
-                {/* Social Links */}
-                <div className="flex space-x-4">
-                  <a
-                    href={barber.social.instagram}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-600 hover:text-indigo-600 transition-colors duration-300"
-                  >
-                    <FaInstagram size={20} />
-                  </a>
-                  <a
-                    href={barber.social.facebook}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-600 hover:text-indigo-600 transition-colors duration-300"
-                  >
-                    <FaFacebook size={20} />
-                  </a>
-                  <a
-                    href={barber.social.tiktok}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-gray-600 hover:text-indigo-600 transition-colors duration-300"
-                  >
-                    <FaTiktok size={20} />
-                  </a>
-                </div>
-              </div>
-
-              {/* Book Now Button */}
-              <div className="px-6 pb-6">
-                <Link
-                  href={`/book?barber=${barber.id}`}
-                  className="block w-full text-center bg-black text-white px-6 py-3 rounded-md hover:bg-gray-800 transition-colors duration-300"
-                >
-                  Book with {barber.name.split(' ')[0]}
-                </Link>
-              </div>
+        <div className="relative">
+          {showSlider && (
+            <div className="flex justify-between items-center mb-4">
+              <button
+                onClick={handlePrev}
+                disabled={sliderIndex === 0}
+                className={`p-2 rounded-full bg-black text-white ${sliderIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-800'}`}
+              >
+                <FaChevronLeft size={20} />
+              </button>
+              <button
+                onClick={handleNext}
+                disabled={sliderIndex + itemsPerPage >= barbers.length}
+                className={`p-2 rounded-full bg-black text-white ${sliderIndex + itemsPerPage >= barbers.length ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-800'}`}
+              >
+                <FaChevronRight size={20} />
+              </button>
             </div>
-          ))}
+          )}
+          
+          <div className={`grid ${showSlider ? '' : 'lg:grid-cols-3'} gap-8`}>
+            {(showSlider ? barbers.slice(sliderIndex, sliderIndex + itemsPerPage) : barbers).map((barber) => (
+              <div
+                key={barber.id}
+                className="bg-white rounded-xl shadow-md overflow-hidden transition-transform duration-300 hover:shadow-lg hover:scale-[1.02]"
+              >
+                <div className="relative h-80 w-full">
+                  <Image
+                    src={barber.image}
+                    alt={barber.name}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">{barber.name}</h3>
+                  <p className="text-indigo-600 font-semibold mb-4">{barber.role}</p>
+                  <p className="text-gray-600 mb-6">{barber.bio}</p>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex space-x-4">
+                      <a href={barber.social.instagram} className="text-gray-400 hover:text-black transition-colors">
+                        <FaInstagram size={20} />
+                      </a>
+                      <a href={barber.social.facebook} className="text-gray-400 hover:text-black transition-colors">
+                        <FaFacebook size={20} />
+                      </a>
+                      <a href={barber.social.tiktok} className="text-gray-400 hover:text-black transition-colors">
+                        <FaTiktok size={20} />
+                      </a>
+                    </div>
+                    <Link
+                      href={`/book?barber=${barber.id}`}
+                      className="bg-black text-white px-6 py-2 rounded-md hover:bg-gray-800 transition-colors"
+                    >
+                      Book with {barber.name.split(' ')[0]}
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
   );
-};
-
-export default Team; 
+} 

@@ -1,11 +1,14 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { FaInstagram, FaFacebook, FaTiktok, FaCheck } from 'react-icons/fa6';
-import Calendar, { Value } from 'react-calendar';
+import { FaInstagram, FaFacebook, FaTiktok, FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
+import Calendar from 'react-calendar';
+import type { MouseEvent } from 'react';
+import { useSwipeable } from 'react-swipeable';
 import 'react-calendar/dist/Calendar.css';
+import '../styles/calendar.css';
 
 // Temporary data (will come from database later)
 const barbers = [
@@ -27,7 +30,42 @@ const barbers = [
       tiktok: '#'
     }
   },
-  // Add more barbers as needed
+  {
+    id: 2,
+    name: 'Marcus Johnson',
+    role: 'Senior Barber',
+    image: '/barber2.jpg',
+    qualifications: [
+      'Licensed Barber',
+      'Color Treatment Expert',
+      '7+ Years Experience'
+    ],
+    specialties: 'Hair Coloring, Classic Cuts, Hot Towel Shaves',
+    bio: 'Marcus specializes in classic cuts and modern color treatments, bringing a fresh perspective to traditional styles.',
+    social: {
+      instagram: '#',
+      facebook: '#',
+      tiktok: '#'
+    }
+  },
+  {
+    id: 3,
+    name: 'David Rodriguez',
+    role: 'Style Specialist',
+    image: '/barber3.jpg',
+    qualifications: [
+      'Licensed Barber',
+      'Texture Expert',
+      '5+ Years Experience'
+    ],
+    specialties: 'Textured Cuts, Modern Styles, Hair Design',
+    bio: 'David is known for his innovative approach to textured hair and contemporary styling techniques.',
+    social: {
+      instagram: '#',
+      facebook: '#',
+      tiktok: '#'
+    }
+  }
 ];
 
 // Temporary time slots (will come from database later)
@@ -47,6 +85,10 @@ export default function BookingPage() {
   const [selectedBarber, setSelectedBarber] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
+  const [sliderIndex, setSliderIndex] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const itemsPerPage = 2; // Number of barbers to show at once
 
   // Handle pre-selected barber from URL
   useEffect(() => {
@@ -55,11 +97,37 @@ export default function BookingPage() {
       const id = parseInt(barberId);
       if (barbers.some(barber => barber.id === id)) {
         setSelectedBarber(id);
+        const barberIndex = barbers.findIndex(b => b.id === id);
+        setSliderIndex(barberIndex);
       }
     }
   }, [searchParams]);
 
-  const handleDateSelect = (value: Date | Date[]) => {
+  const updateSliderPosition = (index: number) => {
+    if (containerRef.current) {
+      const offset = -(index * 100);
+      containerRef.current.style.transform = `translateX(${offset}%)`;
+    }
+  };
+
+  const handleSlideChange = (newIndex: number) => {
+    const clampedIndex = Math.max(0, Math.min(newIndex, barbers.length - 1));
+    setSliderIndex(clampedIndex);
+    updateSliderPosition(clampedIndex);
+  };
+
+  const handlers = useSwipeable({
+    onSwipedLeft: () => handleSlideChange(sliderIndex + 1),
+    onSwipedRight: () => handleSlideChange(sliderIndex - 1),
+    trackMouse: true,
+    preventScrollOnSwipe: true
+  });
+
+  useEffect(() => {
+    updateSliderPosition(sliderIndex);
+  }, [sliderIndex]);
+
+  const handleDateSelect = (value: any) => {
     if (value instanceof Date) {
       setSelectedDate(value);
       setSelectedTime(null);
@@ -94,55 +162,78 @@ export default function BookingPage() {
           {/* Step 1: Select Barber */}
           <section id="choose-barber">
             <h2 className="text-2xl font-semibold text-gray-900 mb-8">1. Choose Your Barber</h2>
-            <div className="flex flex-wrap justify-center gap-8">
-              {barbers.map((barber) => (
-                <div
-                  key={barber.id}
-                  onClick={() => setSelectedBarber(barber.id)}
-                  className={`relative bg-white rounded-xl shadow-md overflow-hidden w-full max-w-sm cursor-pointer transition-all duration-300 
-                    ${selectedBarber === barber.id ? 'ring-2 ring-black scale-[1.02]' : 'hover:shadow-lg'}`}
-                >
-                  {selectedBarber === barber.id && (
-                    <div className="absolute top-4 right-4 z-10 bg-black text-white rounded-full p-1">
-                      <FaCheck size={16} />
-                    </div>
-                  )}
-                  
-                  {/* Image Container */}
-                  <div className="relative h-80 w-full">
-                    <Image
-                      src={barber.image}
-                      alt={barber.name}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
+            <div className="relative overflow-hidden">
+              <div 
+                {...handlers}
+                ref={containerRef}
+                className="flex transition-transform duration-300 ease-out touch-pan-y"
+              >
+                {barbers.map((barber) => (
+                  <div
+                    key={barber.id}
+                    onClick={() => !isDragging && setSelectedBarber(barber.id)}
+                    className="w-full min-w-full flex-shrink-0 flex justify-center px-4 pt-4"
+                  >
+                    <div 
+                      className={`bg-white rounded-xl shadow-md overflow-hidden w-full max-w-sm cursor-pointer transition-all duration-300 relative
+                        ${selectedBarber === barber.id ? 'ring-2 ring-black scale-[1.02]' : 'hover:shadow-lg'}`}
+                    >
+                      {selectedBarber === barber.id && (
+                        <div className="absolute top-4 right-4 z-10 bg-black text-white rounded-full p-1">
+                          <FaCheck size={16} />
+                        </div>
+                      )}
+                      
+                      {/* Image Container */}
+                      <div className="relative h-80 w-full">
+                        <Image
+                          src={barber.image}
+                          alt={barber.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
 
-                  {/* Content Container */}
-                  <div className="p-6">
-                    <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                      {barber.name}
-                    </h3>
-                    <p className="text-indigo-600 font-semibold mb-4">{barber.role}</p>
-                    
-                    {/* Qualifications */}
-                    <div className="mb-4">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-2">Qualifications</h4>
-                      <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
-                        {barber.qualifications.map((qual, idx) => (
-                          <li key={idx}>{qual}</li>
-                        ))}
-                      </ul>
-                    </div>
+                      {/* Content Container */}
+                      <div className="p-6">
+                        <h3 className="text-2xl font-bold text-gray-900 mb-2">
+                          {barber.name}
+                        </h3>
+                        <p className="text-indigo-600 font-semibold mb-4">{barber.role}</p>
+                        
+                        {/* Qualifications */}
+                        <div className="mb-4">
+                          <h4 className="text-sm font-semibold text-gray-900 mb-2">Qualifications</h4>
+                          <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
+                            {barber.qualifications.map((qual, idx) => (
+                              <li key={idx}>{qual}</li>
+                            ))}
+                          </ul>
+                        </div>
 
-                    {/* Specialties */}
-                    <div className="mb-4">
-                      <h4 className="text-sm font-semibold text-gray-900 mb-2">Specialties</h4>
-                      <p className="text-gray-600 text-sm">{barber.specialties}</p>
+                        {/* Specialties */}
+                        <div className="mb-4">
+                          <h4 className="text-sm font-semibold text-gray-900 mb-2">Specialties</h4>
+                          <p className="text-gray-600 text-sm">{barber.specialties}</p>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
+              
+              {/* Pagination Dots */}
+              <div className="flex justify-center mt-4 gap-2">
+                {barbers.map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleSlideChange(index)}
+                    className={`w-2 h-2 rounded-full transition-all duration-300 
+                      ${index === sliderIndex ? 'bg-black w-4' : 'bg-gray-300'}`}
+                    aria-label={`Go to slide ${index + 1}`}
+                  />
+                ))}
+              </div>
             </div>
           </section>
 
@@ -150,13 +241,27 @@ export default function BookingPage() {
           {selectedBarber && (
             <section className="flex flex-col items-center">
               <h2 className="text-2xl font-semibold text-gray-900 mb-8">2. Choose a Date</h2>
-              <div className="bg-white p-4 rounded-lg shadow-md">
+              <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md">
                 <Calendar
                   onChange={handleDateSelect}
                   value={selectedDate}
                   minDate={new Date()}
-                  className="border-0"
+                  className="mx-auto"
+                  next2Label={null}
+                  prev2Label={null}
+                  showNeighboringMonth={false}
+                  tileDisabled={({ date }) => date.getDay() === 0} // Disable Sundays
                 />
+                {selectedDate && (
+                  <div className="mt-4 text-center text-gray-600">
+                    Selected Date: {selectedDate.toLocaleDateString('en-US', {
+                      weekday: 'long',
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric'
+                    })}
+                  </div>
+                )}
               </div>
             </section>
           )}
@@ -169,7 +274,7 @@ export default function BookingPage() {
                 {timeSlots.map((time) => (
                   <button
                     key={time}
-                    onClick={() => setSelectedTime(time)}
+                    onClick={(event) => setSelectedTime(time)}
                     className={`p-3 rounded-md text-center transition-colors duration-300
                       ${selectedTime === time
                         ? 'bg-black text-white'
