@@ -34,7 +34,8 @@ const Contact = () => {
       await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
       setSubmitStatus('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
-    } catch (error) {
+    } catch (err) {
+      console.error('Form submission error:', err);
       setSubmitStatus('error');
     } finally {
       setIsSubmitting(false);

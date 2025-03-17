@@ -3,10 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { FaInstagram, FaFacebook, FaTiktok, FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
+import { FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 import Calendar from 'react-calendar';
-import type { MouseEvent } from 'react';
-import { useSwipeable } from 'react-swipeable';
+type Value = Date | Date[] | null;
 import 'react-calendar/dist/Calendar.css';
 import '../styles/calendar.css';
 
@@ -89,7 +88,6 @@ export default function BookingPage() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [sliderIndex, setSliderIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
   const touchStartRef = useRef<number | null>(null);
   const touchMoveRef = useRef<number | null>(null);
 
@@ -108,7 +106,6 @@ export default function BookingPage() {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartRef.current = e.touches[0].clientX;
-    setIsDragging(true);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -117,10 +114,7 @@ export default function BookingPage() {
   };
 
   const handleTouchEnd = () => {
-    if (!touchStartRef.current || !touchMoveRef.current) {
-      setIsDragging(false);
-      return;
-    }
+    if (!touchStartRef.current || !touchMoveRef.current) return;
 
     const diff = touchStartRef.current - touchMoveRef.current;
     const threshold = window.innerWidth * 0.2; // 20% of screen width
@@ -135,7 +129,6 @@ export default function BookingPage() {
 
     touchStartRef.current = null;
     touchMoveRef.current = null;
-    setIsDragging(false);
   };
 
   const handleSlideChange = (newIndex: number) => {
@@ -143,7 +136,7 @@ export default function BookingPage() {
     setSliderIndex(clampedIndex);
   };
 
-  const handleDateSelect = (value: Date | null) => {
+  const handleDateSelect = (value: Value) => {
     if (value instanceof Date) {
       setSelectedDate(value);
       setSelectedTime(null);
@@ -289,6 +282,7 @@ export default function BookingPage() {
               <h2 className="text-2xl font-semibold text-gray-900 mb-8">2. Choose a Date</h2>
               <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md">
                 <Calendar
+                  // @ts-ignore
                   onChange={handleDateSelect}
                   value={selectedDate}
                   minDate={new Date()}
