@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
@@ -80,7 +80,7 @@ const generateTimeSlots = () => {
   return slots;
 };
 
-export default function BookingPage() {
+function BookingContent() {
   const searchParams = useSearchParams();
   const [selectedBarber, setSelectedBarber] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
@@ -360,5 +360,13 @@ export default function BookingPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function BookingPage() {
+  return (
+    <Suspense fallback={<div className="py-20 text-center">Loading booking page...</div>}>
+      <BookingContent />
+    </Suspense>
   );
 } 
