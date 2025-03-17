@@ -74,7 +74,7 @@ const generateTimeSlots = () => {
   for (let hour = 9; hour <= 19; hour++) {
     const isPM = hour >= 12;
     const displayHour = hour > 12 ? hour - 12 : hour;
-    for (let minute of ['00', '30']) {
+    for (const minute of ['00', '30']) {
       if (hour === 19 && minute === '30') continue;
       slots.push(`${displayHour}:${minute} ${isPM ? 'PM' : 'AM'}`);
     }
@@ -143,7 +143,7 @@ export default function BookingPage() {
     setSliderIndex(clampedIndex);
   };
 
-  const handleDateSelect = (value: any) => {
+  const handleDateSelect = (value: Date | null) => {
     if (value instanceof Date) {
       setSelectedDate(value);
       setSelectedTime(null);
@@ -320,7 +320,7 @@ export default function BookingPage() {
                 {timeSlots.map((time) => (
                   <button
                     key={time}
-                    onClick={(event) => setSelectedTime(time)}
+                    onClick={() => setSelectedTime(time)}
                     className={`p-3 rounded-md text-center transition-colors duration-300
                       ${selectedTime === time
                         ? 'bg-black text-white'
