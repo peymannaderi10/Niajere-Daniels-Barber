@@ -282,7 +282,7 @@ export default function BookingPage() {
               <h2 className="text-2xl font-semibold text-gray-900 mb-8">2. Choose a Date</h2>
               <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md">
                 <Calendar
-                  // @ts-ignore
+                  // @ts-expect-error - react-calendar type definitions are incomplete
                   onChange={handleDateSelect}
                   value={selectedDate}
                   minDate={new Date()}
