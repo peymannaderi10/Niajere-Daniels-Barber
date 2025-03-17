@@ -4,7 +4,8 @@ const nextConfig = {
   images: {
     unoptimized: true, // Required for static export
   },
-  basePath: '/barber-website', // Replace with your repository name
+  basePath: '/Niajere-Daniels-Barber',
+  assetPrefix: '/Niajere-Daniels-Barber/',
 }
 
 module.exports = nextConfig 
