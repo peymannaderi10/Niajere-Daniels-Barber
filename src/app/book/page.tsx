@@ -5,6 +5,7 @@ import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 import Calendar from 'react-calendar';
+import type { Value } from 'react-calendar/dist/cjs/shared/types';
 import 'react-calendar/dist/Calendar.css';
 import '../styles/calendar.css';
 
@@ -137,6 +138,7 @@ export default function BookingPage() {
     setSliderIndex(clampedIndex);
   };
 
+  // @ts-ignore
   const handleDateSelect = (value: any) => {
     if (value instanceof Date) {
       setSelectedDate(value);
