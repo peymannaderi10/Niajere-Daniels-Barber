@@ -7,6 +7,7 @@ import { FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import '../styles/calendar.css';
+import { Value } from 'react-calendar/dist/cjs/shared/types';
 
 // Temporary data (will come from database later)
 const barbers = [
@@ -137,7 +138,6 @@ export default function BookingPage() {
     setSliderIndex(clampedIndex);
   };
 
-  // @ts-ignore
   const handleDateSelect = (value: any) => {
     if (value instanceof Date) {
       setSelectedDate(value);
@@ -284,6 +284,7 @@ export default function BookingPage() {
               <h2 className="text-2xl font-semibold text-gray-900 mb-8">2. Choose a Date</h2>
               <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md">
                 <Calendar
+                  // @ts-ignore
                   onChange={handleDateSelect}
                   value={selectedDate}
                   minDate={new Date()}
