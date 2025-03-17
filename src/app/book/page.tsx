@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useEffect, useRef, Suspense } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
+import { FaInstagram, FaFacebook, FaTiktok, FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 import Calendar from 'react-calendar';
-type Value = Date | Date[] | null;
+import type { MouseEvent } from 'react';
+import { useSwipeable } from 'react-swipeable';
 import 'react-calendar/dist/Calendar.css';
 import '../styles/calendar.css';
 
@@ -73,7 +74,7 @@ const generateTimeSlots = () => {
   for (let hour = 9; hour <= 19; hour++) {
     const isPM = hour >= 12;
     const displayHour = hour > 12 ? hour - 12 : hour;
-    for (const minute of ['00', '30']) {
+    for (let minute of ['00', '30']) {
       if (hour === 19 && minute === '30') continue;
       slots.push(`${displayHour}:${minute} ${isPM ? 'PM' : 'AM'}`);
     }
@@ -82,26 +83,13 @@ const generateTimeSlots = () => {
 };
 
 export default function BookingPage() {
-  return (
-    <Suspense fallback={
-      <div className="py-20 bg-gray-50 min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h1 className="text-2xl font-semibold text-gray-900">Loading...</h1>
-        </div>
-      </div>
-    }>
-      <BookingContent />
-    </Suspense>
-  );
-}
-
-function BookingContent() {
   const searchParams = useSearchParams();
   const [selectedBarber, setSelectedBarber] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [sliderIndex, setSliderIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const touchStartRef = useRef<number | null>(null);
   const touchMoveRef = useRef<number | null>(null);
 
@@ -120,6 +108,7 @@ function BookingContent() {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartRef.current = e.touches[0].clientX;
+    setIsDragging(true);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -128,7 +117,10 @@ function BookingContent() {
   };
 
   const handleTouchEnd = () => {
-    if (!touchStartRef.current || !touchMoveRef.current) return;
+    if (!touchStartRef.current || !touchMoveRef.current) {
+      setIsDragging(false);
+      return;
+    }
 
     const diff = touchStartRef.current - touchMoveRef.current;
     const threshold = window.innerWidth * 0.2; // 20% of screen width
@@ -143,6 +135,7 @@ function BookingContent() {
 
     touchStartRef.current = null;
     touchMoveRef.current = null;
+    setIsDragging(false);
   };
 
   const handleSlideChange = (newIndex: number) => {
@@ -150,7 +143,7 @@ function BookingContent() {
     setSliderIndex(clampedIndex);
   };
 
-  const handleDateSelect = (value: Value) => {
+  const handleDateSelect = (value: any) => {
     if (value instanceof Date) {
       setSelectedDate(value);
       setSelectedTime(null);
@@ -296,7 +289,6 @@ function BookingContent() {
               <h2 className="text-2xl font-semibold text-gray-900 mb-8">2. Choose a Date</h2>
               <div className="bg-white p-6 rounded-xl shadow-md w-full max-w-md">
                 <Calendar
-                  // @ts-expect-error - react-calendar type definitions are incomplete
                   onChange={handleDateSelect}
                   value={selectedDate}
                   minDate={new Date()}
@@ -328,7 +320,7 @@ function BookingContent() {
                 {timeSlots.map((time) => (
                   <button
                     key={time}
-                    onClick={() => setSelectedTime(time)}
+                    onClick={(event) => setSelectedTime(time)}
                     className={`p-3 rounded-md text-center transition-colors duration-300
                       ${selectedTime === time
                         ? 'bg-black text-white'

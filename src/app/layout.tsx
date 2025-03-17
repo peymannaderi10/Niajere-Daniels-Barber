@@ -6,8 +6,8 @@ import ClientLayout from '@/components/ClientLayout';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Niajere Daniels Barber',
-  description: 'Book your next haircut with Niajere Daniels',
+  title: 'Niajere Daniels Barber | Professional Barbering Services',
+  description: 'Experience premium grooming services at Niajere Daniels Barber. Book your appointment today for expert haircuts, beard trims, and styling.',
 };
 
 export default function RootLayout({
