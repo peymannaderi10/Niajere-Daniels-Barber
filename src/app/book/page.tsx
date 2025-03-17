@@ -72,9 +72,11 @@ const barbers = [
 const generateTimeSlots = () => {
   const slots = [];
   for (let hour = 9; hour <= 19; hour++) {
+    const isPM = hour >= 12;
+    const displayHour = hour > 12 ? hour - 12 : hour;
     for (let minute of ['00', '30']) {
       if (hour === 19 && minute === '30') continue;
-      slots.push(`${hour}:${minute}`);
+      slots.push(`${displayHour}:${minute} ${isPM ? 'PM' : 'AM'}`);
     }
   }
   return slots;
@@ -86,9 +88,10 @@ export default function BookingPage() {
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [sliderIndex, setSliderIndex] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const itemsPerPage = 2; // Number of barbers to show at once
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartRef = useRef<number | null>(null);
+  const touchMoveRef = useRef<number | null>(null);
 
   // Handle pre-selected barber from URL
   useEffect(() => {
@@ -103,29 +106,42 @@ export default function BookingPage() {
     }
   }, [searchParams]);
 
-  const updateSliderPosition = (index: number) => {
-    if (containerRef.current) {
-      const offset = -(index * 100);
-      containerRef.current.style.transform = `translateX(${offset}%)`;
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartRef.current = e.touches[0].clientX;
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartRef.current) return;
+    touchMoveRef.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartRef.current || !touchMoveRef.current) {
+      setIsDragging(false);
+      return;
     }
+
+    const diff = touchStartRef.current - touchMoveRef.current;
+    const threshold = window.innerWidth * 0.2; // 20% of screen width
+
+    if (Math.abs(diff) > threshold) {
+      if (diff > 0 && sliderIndex < barbers.length - 1) {
+        handleSlideChange(sliderIndex + 1);
+      } else if (diff < 0 && sliderIndex > 0) {
+        handleSlideChange(sliderIndex - 1);
+      }
+    }
+
+    touchStartRef.current = null;
+    touchMoveRef.current = null;
+    setIsDragging(false);
   };
 
   const handleSlideChange = (newIndex: number) => {
     const clampedIndex = Math.max(0, Math.min(newIndex, barbers.length - 1));
     setSliderIndex(clampedIndex);
-    updateSliderPosition(clampedIndex);
   };
-
-  const handlers = useSwipeable({
-    onSwipedLeft: () => handleSlideChange(sliderIndex + 1),
-    onSwipedRight: () => handleSlideChange(sliderIndex - 1),
-    trackMouse: true,
-    preventScrollOnSwipe: true
-  });
-
-  useEffect(() => {
-    updateSliderPosition(sliderIndex);
-  }, [sliderIndex]);
 
   const handleDateSelect = (value: any) => {
     if (value instanceof Date) {
@@ -162,64 +178,94 @@ export default function BookingPage() {
           {/* Step 1: Select Barber */}
           <section id="choose-barber">
             <h2 className="text-2xl font-semibold text-gray-900 mb-8">1. Choose Your Barber</h2>
-            <div className="relative overflow-hidden">
-              <div 
-                {...handlers}
-                ref={containerRef}
-                className="flex transition-transform duration-300 ease-out touch-pan-y"
-              >
-                {barbers.map((barber) => (
-                  <div
-                    key={barber.id}
-                    onClick={() => !isDragging && setSelectedBarber(barber.id)}
-                    className="w-full min-w-full flex-shrink-0 flex justify-center px-4 pt-4"
+            <div className="relative w-full">
+              {/* Carousel Container */}
+              <div className="w-full overflow-hidden py-12 relative">
+                {/* Left Arrow */}
+                {sliderIndex > 0 && (
+                  <button 
+                    onClick={() => handleSlideChange(sliderIndex - 1)}
+                    className="absolute left-[calc(50%-320px)] top-1/2 -translate-y-1/2 z-10 bg-black text-white p-2 rounded-full shadow-lg hover:bg-gray-800 transition-colors"
                   >
-                    <div 
-                      className={`bg-white rounded-xl shadow-md overflow-hidden w-full max-w-sm cursor-pointer transition-all duration-300 relative
-                        ${selectedBarber === barber.id ? 'ring-2 ring-black scale-[1.02]' : 'hover:shadow-lg'}`}
+                    <FaChevronLeft size={20} />
+                  </button>
+                )}
+
+                {/* Right Arrow */}
+                {sliderIndex < barbers.length - 1 && (
+                  <button 
+                    onClick={() => handleSlideChange(sliderIndex + 1)}
+                    className="absolute right-[calc(50%-320px)] top-1/2 -translate-y-1/2 z-10 bg-black text-white p-2 rounded-full shadow-lg hover:bg-gray-800 transition-colors"
+                  >
+                    <FaChevronRight size={20} />
+                  </button>
+                )}
+
+                <div 
+                  ref={containerRef}
+                  className="flex w-full transition-transform duration-300 ease-out"
+                  style={{ 
+                    transform: `translateX(-${sliderIndex * (100 / barbers.length)}%)`,
+                    width: `${barbers.length * 100}%`
+                  }}
+                  onTouchStart={handleTouchStart}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                >
+                  {barbers.map((barber) => (
+                    <div
+                      key={barber.id}
+                      className="w-full flex-shrink-0 flex justify-center px-4 relative"
+                      style={{ width: `${100 / barbers.length}%` }}
                     >
-                      {selectedBarber === barber.id && (
-                        <div className="absolute top-4 right-4 z-10 bg-black text-white rounded-full p-1">
-                          <FaCheck size={16} />
-                        </div>
-                      )}
-                      
-                      {/* Image Container */}
-                      <div className="relative h-80 w-full">
-                        <Image
-                          src={barber.image}
-                          alt={barber.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-
-                      {/* Content Container */}
-                      <div className="p-6">
-                        <h3 className="text-2xl font-bold text-gray-900 mb-2">
-                          {barber.name}
-                        </h3>
-                        <p className="text-indigo-600 font-semibold mb-4">{barber.role}</p>
+                      <div 
+                        onClick={() => setSelectedBarber(barber.id)}
+                        className={`bg-white rounded-xl shadow-md overflow-hidden w-full max-w-sm cursor-pointer transition-all duration-300 h-full relative
+                          ${selectedBarber === barber.id ? 'ring-2 ring-black scale-[1.02]' : 'hover:shadow-lg'}`}
+                      >
+                        {selectedBarber === barber.id && (
+                          <div className="absolute top-4 right-4 z-10 bg-black text-white rounded-full p-1">
+                            <FaCheck size={16} />
+                          </div>
+                        )}
                         
-                        {/* Qualifications */}
-                        <div className="mb-4">
-                          <h4 className="text-sm font-semibold text-gray-900 mb-2">Qualifications</h4>
-                          <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
-                            {barber.qualifications.map((qual, idx) => (
-                              <li key={idx}>{qual}</li>
-                            ))}
-                          </ul>
+                        {/* Image Container */}
+                        <div className="relative h-80 w-full">
+                          <Image
+                            src={barber.image}
+                            alt={barber.name}
+                            fill
+                            className="object-cover object-top"
+                          />
                         </div>
 
-                        {/* Specialties */}
-                        <div className="mb-4">
-                          <h4 className="text-sm font-semibold text-gray-900 mb-2">Specialties</h4>
-                          <p className="text-gray-600 text-sm">{barber.specialties}</p>
+                        {/* Content Container */}
+                        <div className="p-6">
+                          <h3 className="text-2xl font-bold text-gray-900 mb-3">
+                            {barber.name}
+                          </h3>
+                          <p className="text-indigo-600 font-semibold mb-4">{barber.role}</p>
+                          
+                          {/* Qualifications */}
+                          <div className="mb-4">
+                            <h4 className="text-sm font-semibold text-gray-900 mb-2">Qualifications</h4>
+                            <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
+                              {barber.qualifications.map((qual, idx) => (
+                                <li key={idx}>{qual}</li>
+                              ))}
+                            </ul>
+                          </div>
+
+                          {/* Specialties */}
+                          <div className="mb-4">
+                            <h4 className="text-sm font-semibold text-gray-900 mb-2">Specialties</h4>
+                            <p className="text-gray-600 text-sm">{barber.specialties}</p>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
               
               {/* Pagination Dots */}
@@ -289,7 +335,22 @@ export default function BookingPage() {
 
           {/* Booking Button */}
           {selectedTime && (
-            <div className="flex justify-center mt-8">
+            <div className="flex flex-col items-center mt-8 space-y-4">
+              <p className="text-lg text-gray-700">
+                You are booking with{' '}
+                <span className="font-semibold">{barbers.find(b => b.id === selectedBarber)?.name}</span>{' '}
+                on{' '}
+                <span className="font-semibold">
+                  {selectedDate?.toLocaleDateString('en-US', {
+                    weekday: 'long',
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </span>{' '}
+                at{' '}
+                <span className="font-semibold">{selectedTime}</span>
+              </p>
               <button
                 className="bg-black text-white px-8 py-4 rounded-md font-semibold hover:bg-gray-800 transition-colors duration-300"
                 onClick={() => {
