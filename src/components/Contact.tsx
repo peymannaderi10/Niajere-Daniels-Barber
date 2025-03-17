@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FaPhone, FaEnvelope, FaLocationDot, FaClock } from 'react-icons/fa6';
+import { FaMapMarkerAlt, FaPhone, FaEnvelope } from 'react-icons/fa';
 
 const businessHours = [
   { day: 'Monday', hours: '9:00 AM - 7:00 PM' },
@@ -54,7 +54,7 @@ const Contact = () => {
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-gray-900 mb-4">Contact Us</h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Have questions? We're here to help. Send us a message and we'll respond as soon as possible.
+            We&apos;d love to hear from you. Send us a message and we&apos;ll get back to you as soon as possible.
           </p>
         </div>
 
@@ -75,7 +75,7 @@ const Contact = () => {
 
             <div className="bg-white p-6 rounded-lg shadow-md space-y-6">
               <div className="flex items-start space-x-4">
-                <FaLocationDot className="text-black text-xl mt-1" />
+                <FaMapMarkerAlt className="text-black text-xl mt-1" />
                 <div>
                   <h4 className="font-semibold text-gray-900">Location</h4>
                   <p className="text-gray-600">123 Barber Street<br />City, State 12345</p>

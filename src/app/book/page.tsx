@@ -3,10 +3,8 @@
 import { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import Image from 'next/image';
-import { FaInstagram, FaFacebook, FaTiktok, FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
+import { FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 import Calendar from 'react-calendar';
-import type { MouseEvent } from 'react';
-import { useSwipeable } from 'react-swipeable';
 import 'react-calendar/dist/Calendar.css';
 import '../styles/calendar.css';
 
@@ -74,7 +72,7 @@ const generateTimeSlots = () => {
   for (let hour = 9; hour <= 19; hour++) {
     const isPM = hour >= 12;
     const displayHour = hour > 12 ? hour - 12 : hour;
-    for (let minute of ['00', '30']) {
+    for (const minute of ['00', '30']) {
       if (hour === 19 && minute === '30') continue;
       slots.push(`${displayHour}:${minute} ${isPM ? 'PM' : 'AM'}`);
     }
@@ -89,7 +87,6 @@ export default function BookingPage() {
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [sliderIndex, setSliderIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [isDragging, setIsDragging] = useState(false);
   const touchStartRef = useRef<number | null>(null);
   const touchMoveRef = useRef<number | null>(null);
 
@@ -108,7 +105,6 @@ export default function BookingPage() {
 
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartRef.current = e.touches[0].clientX;
-    setIsDragging(true);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
@@ -118,7 +114,6 @@ export default function BookingPage() {
 
   const handleTouchEnd = () => {
     if (!touchStartRef.current || !touchMoveRef.current) {
-      setIsDragging(false);
       return;
     }
 
@@ -135,7 +130,6 @@ export default function BookingPage() {
 
     touchStartRef.current = null;
     touchMoveRef.current = null;
-    setIsDragging(false);
   };
 
   const handleSlideChange = (newIndex: number) => {
@@ -320,7 +314,7 @@ export default function BookingPage() {
                 {timeSlots.map((time) => (
                   <button
                     key={time}
-                    onClick={(event) => setSelectedTime(time)}
+                    onClick={() => setSelectedTime(time)}
                     className={`p-3 rounded-md text-center transition-colors duration-300
                       ${selectedTime === time
                         ? 'bg-black text-white'
