@@ -1,36 +1,59 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Niajere Daniels Barber Website
 
-## Getting Started
+A modern website for Niajere Daniels Barber Shop featuring online booking, service information, and contact details.
 
-First, run the development server:
+## Setup
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+2. Configure AWS credentials:
+   - Create a `.env.local` file in the root directory
+   - Add the following environment variables with your AWS credentials:
+   ```
+   AWS_ACCESS_KEY_ID=your_access_key_here
+   AWS_SECRET_ACCESS_KEY=your_secret_key_here
+   AWS_REGION=your_aws_region (default: us-east-1)
+   DYNAMODB_TABLE_NAME=customerBookings
+   ```
+
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
+
+## DynamoDB Schema
+
+The application uses a DynamoDB table with the following structure:
+
+- Table Name: `customerBookings`
+- Partition Key: `date` (String) - Format: YYYY-MM-DD
+- Sort Key: `time#barberId#customerId` (String) - The attribute name is literally "time#barberId#customerId"
+
+Example item:
+```json
+{
+  "date": "2023-11-25",
+  "time#barberId#customerId": "3:30 PM#1#customer-12345",
+  "firstName": "John",
+  "lastName": "Doe",
+  "email": "john@example.com",
+  "phone": "5551234567",
+  "notes": "Short on sides, trim on top",
+  "barberName": "Niajere Daniels",
+  "barberId": "1",
+  "time": "3:30 PM",
+  "status": "confirmed",
+  "createdAt": "2023-11-20T14:30:00Z"
+}
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deployment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+This is a Next.js application that can be deployed to platforms like Vercel, Render, or AWS Amplify.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+When deploying to a hosting service, make sure to set the environment variables (AWS credentials and region) in the hosting service's settings.
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**IMPORTANT:** Never commit your actual AWS credentials to the repository. Always use environment variables for secrets.

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef, Suspense } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { FaCheck, FaChevronLeft, FaChevronRight } from 'react-icons/fa6';
 import Calendar from 'react-calendar';
@@ -82,10 +82,13 @@ const generateTimeSlots = () => {
 
 function BookingContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [selectedBarber, setSelectedBarber] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [sliderIndex, setSliderIndex] = useState(0);
+  const [availableTimeSlots, setAvailableTimeSlots] = useState<string[]>([]);
+  const [isLoadingTimeSlots, setIsLoadingTimeSlots] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const touchStartRef = useRef<number | null>(null);
   const touchMoveRef = useRef<number | null>(null);
@@ -141,10 +144,60 @@ function BookingContent() {
     if (value instanceof Date) {
       setSelectedDate(value);
       setSelectedTime(null);
+      
+      // If both date and barber are selected, fetch available time slots
+      if (selectedBarber) {
+        fetchAvailableTimeSlots(value, selectedBarber);
+      }
     }
   };
 
-  const timeSlots = generateTimeSlots();
+  // Function to fetch available time slots
+  const fetchAvailableTimeSlots = async (date: Date, barberId: number) => {
+    setIsLoadingTimeSlots(true);
+    setAvailableTimeSlots([]); // Clear previous slots while loading
+    
+    try {
+      // Format date for API (YYYY-MM-DD)
+      const formattedDate = date.toISOString().split('T')[0];
+      
+      // Fetch booked time slots from the API
+      const response = await fetch(
+        `/api/bookings/available-times?date=${formattedDate}&barberId=${barberId}`
+      );
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Failed to fetch available time slots');
+      }
+      
+      // Get all time slots
+      const allTimeSlots = generateTimeSlots();
+      
+      // Filter out booked time slots
+      const bookedTimes = new Set(data.bookedTimeSlots.map((slot: any) => slot.time));
+      const available = allTimeSlots.filter(time => !bookedTimes.has(time));
+      
+      setAvailableTimeSlots(available);
+    } catch (error) {
+      console.error('Error fetching available time slots:', error);
+      // If there's an error, show all time slots
+      setAvailableTimeSlots(generateTimeSlots());
+      // You could add a toast notification here to inform the user
+    } finally {
+      setIsLoadingTimeSlots(false);
+    }
+  };
+
+  // When barber is selected and date is already selected, fetch available time slots
+  useEffect(() => {
+    if (selectedBarber && selectedDate) {
+      fetchAvailableTimeSlots(selectedDate, selectedBarber);
+    }
+  }, [selectedBarber]);
+
+  const timeSlots = availableTimeSlots.length > 0 ? availableTimeSlots : generateTimeSlots();
 
   // Scroll to barber section if pre-selected
   useEffect(() => {
@@ -311,20 +364,36 @@ function BookingContent() {
           {selectedDate && (
             <section>
               <h2 className="text-2xl font-semibold text-gray-900 mb-8">3. Choose a Time</h2>
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-                {timeSlots.map((time) => (
-                  <button
-                    key={time}
-                    onClick={() => setSelectedTime(time)}
-                    className={`p-3 rounded-md text-center transition-colors duration-300
-                      ${selectedTime === time
-                        ? 'bg-black text-white'
-                        : 'bg-white text-gray-700 hover:bg-gray-50'}`}
-                  >
-                    {time}
-                  </button>
-                ))}
-              </div>
+              
+              {isLoadingTimeSlots ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-black"></div>
+                  <p className="ml-3 text-gray-600">Loading available time slots...</p>
+                </div>
+              ) : availableTimeSlots.length === 0 ? (
+                <div className="text-center py-8 bg-yellow-50 rounded-lg border border-yellow-100 p-4 max-w-md mx-auto">
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-10 w-10 text-yellow-500 mx-auto mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <h3 className="text-xl font-medium text-yellow-800 mb-2">No Available Times</h3>
+                  <p className="text-yellow-700">All appointment slots are booked for this date. Please select another date or check back later.</p>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+                  {timeSlots.map((time) => (
+                    <button
+                      key={time}
+                      onClick={() => setSelectedTime(time)}
+                      className={`p-3 rounded-md text-center transition-colors duration-300
+                        ${selectedTime === time
+                          ? 'bg-black text-white'
+                          : 'bg-white text-gray-700 hover:bg-gray-50'}`}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+              )}
             </section>
           )}
 
@@ -349,11 +418,17 @@ function BookingContent() {
               <button
                 className="bg-black text-white px-8 py-4 rounded-md font-semibold hover:bg-gray-800 transition-colors duration-300"
                 onClick={() => {
-                  // Here you would typically handle the booking submission
-                  alert('Booking functionality will be implemented when database is ready');
+                  const selectedBarberObj = barbers.find(b => b.id === selectedBarber);
+                  if (selectedBarberObj && selectedDate) {
+                    // Format date as ISO string
+                    const dateString = selectedDate.toISOString();
+                    
+                    // Navigate to customer info page with booking details in URL parameters
+                    router.push(`/book/customer-info?barberId=${selectedBarber}&barberName=${encodeURIComponent(selectedBarberObj.name)}&date=${encodeURIComponent(dateString)}&time=${encodeURIComponent(selectedTime)}`);
+                  }
                 }}
               >
-                Confirm Booking
+                Continue to Customer Information
               </button>
             </div>
           )}
