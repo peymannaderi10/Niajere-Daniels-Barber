@@ -1,10 +1,10 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 
-export default function CustomerInfoPage() {
+function CustomerInfoContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   
@@ -287,5 +287,13 @@ export default function CustomerInfoPage() {
         </form>
       </div>
     </main>
+  );
+}
+
+export default function CustomerInfoPage() {
+  return (
+    <Suspense fallback={<div className="py-20 text-center">Loading booking form...</div>}>
+      <CustomerInfoContent />
+    </Suspense>
   );
 } 
