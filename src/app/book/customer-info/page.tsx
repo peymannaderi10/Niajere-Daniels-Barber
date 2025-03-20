@@ -155,15 +155,15 @@ function CustomerInfoContent() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <p className="text-sm text-gray-500">Barber</p>
-              <p className="font-medium">{barberName}</p>
+              <p className="font-medium text-black">{barberName}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Date</p>
-              <p className="font-medium">{formatDate(date)}</p>
+              <p className="font-medium text-black">{formatDate(date)}</p>
             </div>
             <div>
               <p className="text-sm text-gray-500">Time</p>
-              <p className="font-medium">{time}</p>
+              <p className="font-medium text-black">{time}</p>
             </div>
           </div>
         </div>
@@ -184,7 +184,7 @@ function CustomerInfoContent() {
                 name="firstName"
                 value={formData.firstName}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black ${
+                className={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black text-black ${
                   errors.firstName ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
@@ -204,7 +204,7 @@ function CustomerInfoContent() {
                 name="lastName"
                 value={formData.lastName}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black ${
+                className={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black text-black ${
                   errors.lastName ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
@@ -224,7 +224,7 @@ function CustomerInfoContent() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black ${
+                className={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black text-black ${
                   errors.email ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
@@ -245,7 +245,7 @@ function CustomerInfoContent() {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="(123) 456-7890"
-                className={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black ${
+                className={`w-full px-4 py-2 border rounded-md focus:ring-black focus:border-black text-black ${
                   errors.phone ? 'border-red-500' : 'border-gray-300'
                 }`}
               />
@@ -266,7 +266,7 @@ function CustomerInfoContent() {
               value={formData.notes}
               onChange={handleChange}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black"
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-black focus:border-black text-black"
               placeholder="Any special requests or information for your barber..."
             />
           </div>
