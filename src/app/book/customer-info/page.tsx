@@ -134,7 +134,8 @@ export default function CustomerInfoPage() {
         day: 'numeric',
         year: 'numeric'
       });
-    } catch (e) {
+    } catch (error) {
+      console.error('Error formatting date:', error);
       return dateString;
     }
   };

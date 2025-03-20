@@ -80,6 +80,13 @@ const generateTimeSlots = () => {
   return slots;
 };
 
+// Type for booked time slot from API
+interface BookedTimeSlot {
+  time: string;
+  barberId: string | number;
+  date: string;
+}
+
 function BookingContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -176,7 +183,7 @@ function BookingContent() {
       const allTimeSlots = generateTimeSlots();
       
       // Filter out booked time slots
-      const bookedTimes = new Set(data.bookedTimeSlots.map((slot: any) => slot.time));
+      const bookedTimes = new Set(data.bookedTimeSlots.map((slot: BookedTimeSlot) => slot.time));
       const available = allTimeSlots.filter(time => !bookedTimes.has(time));
       
       setAvailableTimeSlots(available);
@@ -195,7 +202,7 @@ function BookingContent() {
     if (selectedBarber && selectedDate) {
       fetchAvailableTimeSlots(selectedDate, selectedBarber);
     }
-  }, [selectedBarber]);
+  }, [selectedBarber, selectedDate]);
 
   const timeSlots = availableTimeSlots.length > 0 ? availableTimeSlots : generateTimeSlots();
 
