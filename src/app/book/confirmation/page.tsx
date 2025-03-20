@@ -78,7 +78,7 @@ function ConfirmationContent() {
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Booking Confirmed!</h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Your appointment has been successfully booked. We've sent a confirmation email to {booking.email}.
+            Your appointment has been successfully booked. We&apos;ve sent a confirmation email to {booking.email}.
           </p>
         </div>
         
