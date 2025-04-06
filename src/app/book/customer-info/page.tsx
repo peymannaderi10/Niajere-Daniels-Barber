@@ -83,39 +83,26 @@ function CustomerInfoContent() {
     setIsSubmitting(true);
     
     try {
-      // Format date for DynamoDB (YYYY-MM-DD)
+      // Prepare booking data
       const formattedDate = date ? new Date(date).toISOString().split('T')[0] : '';
       
-      // Send booking data to the API
-      const response = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          date: formattedDate,
-          time,
-          barberId,
-          barberName,
-          firstName: formData.firstName,
-          lastName: formData.lastName,
-          email: formData.email,
-          phone: formData.phone,
-          notes: formData.notes
-        }),
-      });
+      const bookingData = {
+        date: formattedDate,
+        time,
+        barberId,
+        barberName,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        phone: formData.phone,
+        notes: formData.notes
+      };
       
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to create booking');
-      }
-      
-      // Navigate to confirmation page with the booking data
-      router.push(`/book/confirmation?booking=${encodeURIComponent(JSON.stringify(data.booking))}`);
+      // Navigate to payment page with the booking data
+      router.push(`/book/payment?booking=${encodeURIComponent(JSON.stringify(bookingData))}`);
     } catch (error) {
-      console.error('Error creating booking:', error);
-      alert('There was an error creating your booking. Please try again.');
+      console.error('Error preparing booking data:', error);
+      alert('There was an error processing your booking. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

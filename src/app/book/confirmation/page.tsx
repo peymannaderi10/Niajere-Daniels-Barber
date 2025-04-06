@@ -18,6 +18,8 @@ interface BookingData {
   sortKey?: string; // Field added for client-side use
   status: string;
   time: string;
+  paymentStatus?: string;
+  paymentIntentId?: string;
 }
 
 function ConfirmationContent() {
@@ -26,7 +28,30 @@ function ConfirmationContent() {
   const [booking, setBooking] = useState<BookingData | null>(null);
 
   useEffect(() => {
+    const paymentSuccess = searchParams.get('paymentSuccess');
     const bookingParam = searchParams.get('booking');
+    
+    // Handle direct payment success redirect from Stripe
+    if (paymentSuccess === 'true' && !bookingParam) {
+      // Payment was successful, but we need to fetch the booking details
+      // In a real app, you'd want to have an API call here to get booking details
+      // For now, just show a generic success message
+      setBooking({
+        status: 'confirmed',
+        firstName: '',
+        lastName: '',
+        email: '',
+        phone: '',
+        notes: '',
+        date: new Date().toISOString(),
+        barberName: '',
+        sortKey: '',
+        time: '',
+        paymentStatus: 'paid'
+      });
+      return;
+    }
+
     if (!bookingParam) {
       router.push('/book');
       return;
@@ -108,6 +133,23 @@ function ConfirmationContent() {
               <div>
                 <p className="text-sm font-medium text-gray-900">Time</p>
                 <p className="text-lg font-medium text-gray-900">{booking.time}</p>
+              </div>
+            </div>
+            
+            {/* Payment Status */}
+            <div className="flex items-start gap-4">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 mt-1 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 2H8.828a2 2 0 00-1.414.586L6.293 3.707A1 1 0 015.586 4H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
+              </svg>
+              <div>
+                <p className="text-sm font-medium text-gray-500">Payment Status</p>
+                <p className="text-lg font-medium">
+                  {booking.paymentStatus === 'paid' ? (
+                    <span className="text-green-600">Paid</span>
+                  ) : (
+                    <span className="text-yellow-600">Pending</span>
+                  )}
+                </p>
               </div>
             </div>
             

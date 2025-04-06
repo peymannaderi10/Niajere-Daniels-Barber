@@ -25,11 +25,13 @@ export async function POST(request: NextRequest) {
       lastName, 
       email, 
       phone, 
-      notes 
+      notes,
+      paymentIntentId,
+      paymentStatus
     } = body;
 
     // Validate required fields
-    if (!date || !time || !barberId || !firstName || !lastName || !email || !phone) {
+    if (!date || !time || !barberId || !firstName || !lastName || !email || !phone || !paymentIntentId) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -55,6 +57,8 @@ export async function POST(request: NextRequest) {
       barberName,
       barberId,
       time,
+      paymentIntentId,
+      paymentStatus: paymentStatus || 'pending',
       status: 'confirmed',
       createdAt: new Date().toISOString(),
     };
