@@ -47,12 +47,16 @@ const barbers = [
 export default function Team() {
   const [sliderIndex, setSliderIndex] = useState(0);
   const [showSlider, setShowSlider] = useState(false);
-  const itemsPerPage = 2;
+  const [itemsPerPage, setItemsPerPage] = useState(1);
 
   useEffect(() => {
     const checkWidth = () => {
       // Show slider if screen width is less than 1024px (lg breakpoint)
-      setShowSlider(window.innerWidth < 1024);
+      const isMobile = window.innerWidth < 1024;
+      setShowSlider(isMobile);
+      
+      // Show 1 item on mobile screens
+      setItemsPerPage(1);
     };
 
     checkWidth();
@@ -82,24 +86,31 @@ export default function Team() {
           </p>
         </div>
 
-        <div className="relative">
+        <div className="relative px-4">
           {showSlider && (
-            <div className="flex justify-between items-center mb-4">
-              <button
-                onClick={handlePrev}
-                disabled={sliderIndex === 0}
-                className={`p-2 rounded-full bg-black text-white ${sliderIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-800'}`}
-              >
-                <FaChevronLeft size={20} />
-              </button>
-              <button
-                onClick={handleNext}
-                disabled={sliderIndex + itemsPerPage >= barbers.length}
-                className={`p-2 rounded-full bg-black text-white ${sliderIndex + itemsPerPage >= barbers.length ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-800'}`}
-              >
-                <FaChevronRight size={20} />
-              </button>
-            </div>
+            <>
+              <div className="absolute left-0 top-1/2 -translate-y-1/2 z-10">
+                <button
+                  onClick={handlePrev}
+                  disabled={sliderIndex === 0}
+                  className={`p-2 rounded-full bg-black text-white shadow-lg ${sliderIndex === 0 ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-800'}`}
+                  aria-label="Previous barber"
+                >
+                  <FaChevronLeft size={20} />
+                </button>
+              </div>
+              
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
+                <button
+                  onClick={handleNext}
+                  disabled={sliderIndex + itemsPerPage >= barbers.length}
+                  className={`p-2 rounded-full bg-black text-white shadow-lg ${sliderIndex + itemsPerPage >= barbers.length ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-800'}`}
+                  aria-label="Next barber"
+                >
+                  <FaChevronRight size={20} />
+                </button>
+              </div>
+            </>
           )}
           
           <div className={`grid ${showSlider ? '' : 'lg:grid-cols-3'} gap-8`}>
@@ -144,6 +155,21 @@ export default function Team() {
               </div>
             ))}
           </div>
+          
+          {/* Pagination Indicators */}
+          {showSlider && (
+            <div className="flex justify-center mt-6 gap-2">
+              {barbers.map((_, index) => (
+                <button 
+                  key={index}
+                  onClick={() => setSliderIndex(index)}
+                  className={`w-2 h-2 rounded-full transition-all duration-300 
+                    ${index === sliderIndex ? 'bg-black w-4' : 'bg-gray-300'}`}
+                  aria-label={`Go to barber ${index + 1}`}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </section>
