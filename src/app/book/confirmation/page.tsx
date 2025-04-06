@@ -77,7 +77,7 @@ function ConfirmationContent() {
             <FaCheck className="text-green-600 text-2xl" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">Booking Confirmed!</h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-900 max-w-2xl mx-auto">
             Your appointment has been successfully booked. We&apos;ve sent a confirmation email to {booking.email}.
           </p>
         </div>
@@ -88,38 +88,38 @@ function ConfirmationContent() {
           
           <div className="space-y-6">
             <div className="flex items-start gap-4">
-              <FaUser className="text-gray-400 mt-1 flex-shrink-0" />
+              <FaUser className="text-gray-900 mt-1 flex-shrink-0" />
               <div>
-                <p className="text-sm font-medium text-gray-500">Barber</p>
-                <p className="text-lg font-medium">{booking.barberName}</p>
+                <p className="text-sm font-medium text-gray-900">Barber</p>
+                <p className="text-lg font-medium text-gray-900">{booking.barberName}</p>
               </div>
             </div>
             
             <div className="flex items-start gap-4">
-              <FaCalendarAlt className="text-gray-400 mt-1 flex-shrink-0" />
+              <FaCalendarAlt className="text-gray-900 mt-1 flex-shrink-0" />
               <div>
-                <p className="text-sm font-medium text-gray-500">Date</p>
-                <p className="text-lg font-medium">{formatDate(booking.date)}</p>
+                <p className="text-sm font-medium text-gray-900">Date</p>
+                <p className="text-lg font-medium text-gray-900">{formatDate(booking.date)}</p>
               </div>
             </div>
             
             <div className="flex items-start gap-4">
-              <FaClock className="text-gray-400 mt-1 flex-shrink-0" />
+              <FaClock className="text-gray-900 mt-1 flex-shrink-0" />
               <div>
-                <p className="text-sm font-medium text-gray-500">Time</p>
-                <p className="text-lg font-medium">{booking.time}</p>
+                <p className="text-sm font-medium text-gray-900">Time</p>
+                <p className="text-lg font-medium text-gray-900">{booking.time}</p>
               </div>
             </div>
             
-            <div className="border-t border-gray-200 pt-6">
-              <p className="text-sm font-medium text-gray-500 mb-2">Customer Information</p>
-              <p><strong>Name:</strong> {booking.firstName} {booking.lastName}</p>
-              <p><strong>Email:</strong> {booking.email}</p>
-              <p><strong>Phone:</strong> {booking.phone}</p>
+            <div className="border-t border-gray-900 pt-6">
+              <p className="text-sm font-medium text-gray-900 mb-2">Customer Information</p>
+              <p className="text-gray-900"><strong>Name:</strong> {booking.firstName} {booking.lastName}</p>
+              <p className="text-gray-900"><strong>Email:</strong> {booking.email}</p>
+              <p className="text-gray-900"><strong>Phone:</strong> {booking.phone}</p>
               {booking.notes && (
                 <div className="mt-4">
-                  <p className="text-sm font-medium text-gray-500">Additional Notes</p>
-                  <p className="mt-1">{booking.notes}</p>
+                  <p className="text-sm font-medium text-gray-900">Additional Notes</p>
+                  <p className="mt-1 text-gray-900">{booking.notes}</p>
                 </div>
               )}
             </div>

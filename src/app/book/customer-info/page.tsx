@@ -154,15 +154,15 @@ function CustomerInfoContent() {
           <h2 className="text-xl font-semibold text-gray-900 mb-4">Booking Summary</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <p className="text-sm text-gray-500">Barber</p>
+              <p className="text-sm text-gray-900">Barber</p>
               <p className="font-medium text-black">{barberName}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Date</p>
+              <p className="text-sm text-gray-900">Date</p>
               <p className="font-medium text-black">{formatDate(date)}</p>
             </div>
             <div>
-              <p className="text-sm text-gray-500">Time</p>
+              <p className="text-sm text-gray-900">Time</p>
               <p className="font-medium text-black">{time}</p>
             </div>
           </div>

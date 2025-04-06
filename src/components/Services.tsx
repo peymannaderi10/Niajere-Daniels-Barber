@@ -57,7 +57,7 @@ const Services = () => {
               </h3>
               <p className="text-2xl font-bold text-black mb-2">{service.price}</p>
               <p className="text-gray-600 mb-4">{service.description}</p>
-              <p className="text-sm text-gray-500">Duration: {service.duration}</p>
+              <p className="text-sm text-gray-900">Duration: {service.duration}</p>
             </div>
           ))}
         </div>
