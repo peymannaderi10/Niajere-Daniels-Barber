@@ -7,6 +7,19 @@ import { loadStripe, StripeElementsOptions } from '@stripe/stripe-js';
 import Link from 'next/link';
 import PaymentForm from '../../../components/PaymentForm';
 
+// Booking data interface
+interface BookingData {
+  date: string;
+  time: string;
+  barberId: string | number;
+  barberName: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  notes?: string;
+}
+
 // Initialize Stripe with the publishable key
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string
@@ -16,7 +29,7 @@ function PaymentContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [bookingData, setBookingData] = useState<any>(null);
+  const [bookingData, setBookingData] = useState<BookingData | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +44,7 @@ function PaymentContent() {
 
     try {
       // Parse the booking data
-      const parsedBookingData = JSON.parse(decodeURIComponent(bookingParam));
+      const parsedBookingData = JSON.parse(decodeURIComponent(bookingParam)) as BookingData;
       setBookingData(parsedBookingData);
 
       // Create a payment intent
@@ -64,8 +77,8 @@ function PaymentContent() {
       };
 
       createPaymentIntent();
-    } catch (err) {
-      console.error('Error parsing booking data:', err);
+    } catch (_error) {
+      console.error('Error parsing booking data:', _error);
       router.push('/book');
     }
   }, [searchParams, router]);

@@ -9,8 +9,21 @@ import {
 } from '@stripe/react-stripe-js';
 import Link from 'next/link';
 
+// Booking data interface
+interface BookingData {
+  date: string;
+  time: string;
+  barberId: string | number;
+  barberName: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  notes?: string;
+}
+
 interface PaymentFormProps {
-  bookingData: any;
+  bookingData: BookingData;
 }
 
 export default function PaymentForm({ bookingData }: PaymentFormProps) {
