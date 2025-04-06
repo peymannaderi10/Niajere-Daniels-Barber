@@ -78,7 +78,7 @@ const Contact = () => {
                 <FaMapMarkerAlt className="text-black text-xl mt-1" />
                 <div>
                   <h4 className="font-semibold text-gray-900">Location</h4>
-                  <p className="text-gray-600">123 Barber Street<br />City, State 12345</p>
+                  <p className="text-gray-600">4 Gardenia Dr<br />Maple Shade, NJ 08052</p>
                 </div>
               </div>
 
@@ -86,7 +86,7 @@ const Contact = () => {
                 <FaPhone className="text-black text-xl mt-1" />
                 <div>
                   <h4 className="font-semibold text-gray-900">Phone</h4>
-                  <p className="text-gray-600">(555) 123-4567</p>
+                  <p className="text-gray-600">(123) 456-789</p>
                 </div>
               </div>
 
