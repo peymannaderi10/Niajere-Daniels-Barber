@@ -82,7 +82,7 @@ function PaymentContent() {
         day: 'numeric',
         year: 'numeric'
       });
-    } catch (e) {
+    } catch (error) {
       return dateString;
     }
   };
