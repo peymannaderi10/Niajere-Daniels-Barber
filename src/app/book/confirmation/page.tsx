@@ -138,11 +138,11 @@ function ConfirmationContent() {
             
             {/* Payment Status */}
             <div className="flex items-start gap-4">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-400 mt-1 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-900 mt-1 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M4 4a2 2 0 00-2 2v12a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1.586a1 1 0 01-.707-.293l-1.121-1.121A2 2 0 0011.172 2H8.828a2 2 0 00-1.414.586L6.293 3.707A1 1 0 015.586 4H4zm6 9a3 3 0 100-6 3 3 0 000 6z" clipRule="evenodd" />
               </svg>
               <div>
-                <p className="text-sm font-medium text-gray-500">Payment Status</p>
+                <p className="text-sm font-medium text-gray-900">Payment Status</p>
                 <p className="text-lg font-medium">
                   {booking.paymentStatus === 'paid' ? (
                     <span className="text-green-600">Paid</span>
