@@ -95,7 +95,7 @@ function PaymentContent() {
         day: 'numeric',
         year: 'numeric'
       });
-    } catch (error) {
+    } catch (_error) {
       return dateString;
     }
   };
