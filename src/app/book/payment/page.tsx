@@ -77,8 +77,8 @@ function PaymentContent() {
       };
 
       createPaymentIntent();
-    } catch (_error) {
-      console.error('Error parsing booking data:', _error);
+    } catch (error) {
+      console.error('Error parsing booking data:', error);
       router.push('/book');
     }
   }, [searchParams, router]);
@@ -95,7 +95,8 @@ function PaymentContent() {
         day: 'numeric',
         year: 'numeric'
       });
-    } catch (_error) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
       return dateString;
     }
   };
