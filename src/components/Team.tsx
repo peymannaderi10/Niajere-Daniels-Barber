@@ -8,10 +8,10 @@ import { FaInstagram, FaFacebook, FaTiktok, FaChevronLeft, FaChevronRight } from
 const barbers = [
   {
     id: 1,
-    name: 'Niajere Daniels',
+    name: 'Mark Smith',
     role: 'Master Barber & Owner',
-    image: '/niajere.jpg',
-    bio: 'With over a decade of experience, Niajere brings unparalleled expertise and artistry to every cut.',
+    image: '/barber1.jpg',
+    bio: 'With over a decade of experience, Mark brings unparalleled expertise and artistry to every cut.',
     social: {
       instagram: '#',
       facebook: '#',

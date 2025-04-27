@@ -12,16 +12,16 @@ import '../styles/calendar.css';
 const barbers = [
   {
     id: 1,
-    name: 'Niajere Daniels',
+    name: 'Mark Smith',
     role: 'Master Barber & Owner',
-    image: '/niajere.jpg',
+    image: '/barber1.jpg',
     qualifications: [
       'Licensed Master Barber',
       'Precision Cutting Specialist',
       '10+ Years Experience'
     ],
     specialties: 'Fades, Design Work, Beard Sculpting',
-    bio: 'With over a decade of experience, Niajere brings unparalleled expertise and artistry to every cut.',
+    bio: 'With over a decade of experience, Mark brings unparalleled expertise and artistry to every cut.',
     social: {
       instagram: '#',
       facebook: '#',

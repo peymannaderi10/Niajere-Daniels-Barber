@@ -94,7 +94,7 @@ const Contact = () => {
                 <FaEnvelope className="text-black text-xl mt-1" />
                 <div>
                   <h4 className="font-semibold text-gray-900">Email</h4>
-                  <p className="text-gray-600">info@niajeresdanielsbarber.com</p>
+                  <p className="text-gray-600">info@cleancutsbarber.com</p>
                 </div>
               </div>
             </div>

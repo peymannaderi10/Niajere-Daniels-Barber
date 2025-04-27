@@ -1,6 +1,6 @@
-# Niajere Daniels Barber Website
+# CleanCuts Barber Website
 
-A modern website for Niajere Daniels Barber Shop featuring online booking, service information, and contact details.
+A modern website for CleanCuts Barber Shop featuring online booking, service information, and contact details.
 
 ## Setup
 
@@ -42,7 +42,7 @@ Example item:
   "email": "john@example.com",
   "phone": "5551234567",
   "notes": "Short on sides, trim on top",
-  "barberName": "Niajere Daniels",
+  "barberName": "Mark Smith",
   "barberId": "1",
   "time": "3:30 PM",
   "status": "confirmed",
